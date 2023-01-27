@@ -11,6 +11,7 @@ const characters = [
   'summer',
   'meeseeks',
   'scroopy',
+
 ]
 
 const createElement = (tag, className) => {
@@ -19,23 +20,86 @@ const createElement = (tag, className) => {
   return element
 }
 
-const createCard = () => {
+let firstCard = ''
+let secondCard = ''
+
+const cheekEnGame = () =>{
+  const disabledCards = document.querySelectorAll('.disabled-card')
+
+  if(disabledCards.length === 20){
+    alert('Parabens, Você conseguiu!')
+  }
+}
+
+
+const checkCards = () => {
+  const firstCharacter = firstCard.getAttribute('data-character')
+  const secondtCharacter = secondCard.getAttribute('data-character')
+
+  if(firstCharacter === secondtCharacter){
+    firstCard.firstChild.classList.add('disabled-card')
+    secondCard.firstChild.classList.add('disabled-card')
+
+    firstCard = ''
+    secondCard = ''
+
+    cheekEnGame()
+
+  }else{
+    setTimeout(() => {
+      firstCard.classList.remove('reveal-card')
+      secondCard.classList.remove('reveal-card')
+
+      firstCard = ''
+      secondCard = ''
+    }, 500);
+ 
+}
+}
+
+const revealCard = ({ target}) =>{
+
+  if(target.parentNode.className.includes('reveal-card')){
+    return;
+  }
+
+  if(firstCard === ''){
+    target.parentNode.classList.add('reveal-card')
+    firstCard = target.parentNode
+  } else  if (secondCard === ''){
+    target.parentNode.classList.add('reveal-card')
+    secondCard = target.parentNode
+
+    checkCards ()
+  }
+}
+
+const createCard = (character) => {
   const card = createElement('div', 'card')
   const front = createElement('div', 'face front')
   const back = createElement('div', 'face back')
 
+  front.style.backgroundImage = `url('../img/${character}.png')`
+
   card.appendChild(front)
   card.appendChild(back)
 
-  grid.appendChild(card);
+
+
+  card.addEventListener('click', revealCard)
+  card.setAttribute('data-character', character)
 
   return card
 }
 
-
 const loadGame = () => {
-  characters.forEach((characters) => {
-    const card = createCard()
+
+  const duplicateCharacter = [...characters, ...characters]
+
+  const shuffledArray = duplicateCharacter.sort(() => Math.random()-0.5);
+
+  shuffledArray.forEach((character) => {
+    const card = createCard(character)
     grid.appendChild(card)
   })
 }
